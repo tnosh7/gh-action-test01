@@ -13,16 +13,16 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
 
-      - name: Replace placeholders in issue template
+      - name: Create Issue Body
         if: failure()
         env:
           WORKFLOW: ${{ github.workflow }}
           JOB: ${{ github.job }}
           SHA: ${{ github.sha }}
-          run: |
-            sed -i "s/#{workflow}/$WORKFLOW/" .github/issue-template.md
-            sed -i "s/#{job}/$JOB/" .github/issue-template.md
-            sed -i "s/#{sha}/$SHA/" .github/issue-template.md
+        run: |
+          sed -i "s/#{workflow}/$WORKFLOW/" .github/issue-template.md
+          sed -i "s/#{job}/$JOB/" .github/issue-template.md
+          sed -i "s/#{sha}/$SHA/" .github/issue-template.md
 
       - name: Create Issue from File
         if: failure()
