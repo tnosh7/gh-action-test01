@@ -8,7 +8,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Lint Code Base
         uses: github/super-linter@v4
-
+      - name: Create Issue on Failure
+        if : failure()
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/issue-template.md
   test:
     needs: lint
     runs-on: ubuntu-latest
