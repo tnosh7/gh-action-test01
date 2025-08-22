@@ -13,24 +13,18 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
 
-      - name: Replace tokens in issue template
+      - name: Create Issue Body
         if: failure()
-        uses: c-hive/replace-tokens@v1
-        env:
-          WORKFLOW: ${{ github.workflow }}
-          JOB: ${{ github.job }}
-          SHA: ${{ github.sha }}
-          SERVER_URL: ${{ github.server_url }}
-          REPOSITORY: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-        with:
-          sources: '[".github/issue-template.md"]'
-          output: '.github/issue-body.md'
-          token-prefix: '#{'
-          token-suffix: '}#'
+        run: |
+          echo "---" > .github/issue-body.md
+          echo "title: Linting Failed on Commit ${{ github.sha }}" >> .github/issue-body.md
+          echo "labels: bug, ci, automated issue" >> .github/issue-body.md
+          echo "---" >> .github/issue-body.md
+          echo "" >> .github/issue-body.md
+          echo "Linting process failed. Please check the logs for details." >> .github/issue-body.md
+          echo "- **Action Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> .github/issue-body.md
 
-      # 2. 'Create issue' 스텝도 독립적으로 분리하고, if 조건 추가
-      - name: Create issue from template
+      - name: Create Issue from File
         if: failure()
         uses: JasonEtco/create-an-issue@v2
         env:
