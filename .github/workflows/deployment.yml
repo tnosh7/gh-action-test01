@@ -9,18 +9,35 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v4
+
       - name: Lint Code Base
         uses: github/super-linter@v4
-      - name: Create Issue on Lint Failure
+
+      - name: Replace tokens in issue template
+        if: failure()
+        uses: c-hive/replace-tokens@v1
+        env:
+          WORKFLOW: ${{ github.workflow }}
+          JOB: ${{ github.job }}
+          SHA: ${{ github.sha }}
+          SERVER_URL: ${{ github.server_url }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        with:
+          sources: '[".github/issue-template.md"]'
+          output: '.github/issue-body.md'
+          token-prefix: '#{'
+          token-suffix: '}#'
+
+      # 2. 'Create issue' 스텝도 독립적으로 분리하고, if 조건 추가
+      - name: Create issue from template
         if: failure()
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          title: Linting Failed on Commit ${{ github.sha }}
-          body: |
-            Linting process failed. Please check the logs for details.
-            - **Action Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          filename: .github/issue-template.md
+
 
   test:
     runs-on: ubuntu-latest
