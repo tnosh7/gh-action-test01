@@ -32,7 +32,6 @@ jobs:
         with:
           filename: .github/issue-template.md
 
-
   test:
     runs-on: ubuntu-latest
     steps:
