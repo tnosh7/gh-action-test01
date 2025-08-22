@@ -13,22 +13,16 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
 
-      - name: Create Issue Body
-        if: failure()
-        run: |
-          echo "---" > .github/issue-body.md
-          echo "title: Linting Failed on Commit ${{ github.sha }}" >> .github/issue-body.md
-          echo "labels: bug, ci, automated issue" >> .github/issue-body.md
-          echo "---" >> .github/issue-body.md
-          echo "" >> .github/issue-body.md
-          echo "Linting process failed. Please check the logs for details." >> .github/issue-body.md
-          echo "- **Action Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> .github/issue-body.md
-
       - name: Replace placeholders in issue template
-        run: |
-          sed -i "s/#{workflow}/$GITHUB_WORKFLOW/" .github/issue-template.md
-          sed -i "s/#{job}/$GITHUB_JOB/" .github/issue-template.md
-          sed -i "s/#{sha}/$GITHUB_SHA/" .github/issue-template.md
+        if: failure()
+        env:
+          WORKFLOW: ${{ github.workflow }}
+          JOB: ${{ github.job }}
+          SHA: ${{ github.sha }}
+          run: |
+            sed -i "s/#{workflow}/$WORKFLOW/" .github/issue-template.md
+            sed -i "s/#{job}/$JOB/" .github/issue-template.md
+            sed -i "s/#{sha}/$SHA/" .github/issue-template.md
 
       - name: Create Issue from File
         if: failure()
