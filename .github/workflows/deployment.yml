@@ -3,6 +3,8 @@ on: push
 jobs:
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Get code
         uses: actions/checkout@v4
