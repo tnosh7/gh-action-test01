@@ -24,6 +24,12 @@ jobs:
           echo "Linting process failed. Please check the logs for details." >> .github/issue-body.md
           echo "- **Action Run**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> .github/issue-body.md
 
+      - name: Replace placeholders in issue template
+        run: |
+          sed -i "s/#{workflow}/$GITHUB_WORKFLOW/" .github/issue-template.md
+          sed -i "s/#{job}/$GITHUB_JOB/" .github/issue-template.md
+          sed -i "s/#{sha}/$GITHUB_SHA/" .github/issue-template.md
+
       - name: Create Issue from File
         if: failure()
         uses: JasonEtco/create-an-issue@v2
